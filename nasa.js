@@ -28,26 +28,55 @@ axios({
   headers: {'Content-Type':`multipart/form-data; boundary=${bodyFormData._boundary}`}
 })
   .then(response => {
-	// Try to get label of the job we just submitted
-	axios({
-	  method: 'get',
-	  url: `http://192.168.10.24:8000/api/workflows/v1/${response.data.id}/status`
-	})
-	  .then(response => {
-		console.log(response);
-	  })
-	  .catch(error => {
-	    console.log("Response status code", error.response.status);
-	    console.log("Error message", error.response.data.message);
-	  });
-    console.log(response.data);
+    /* Should be failed, return code 400, because the workflow has not been submited yet
+     * Developers should retry this until success, err code 200
+     */
+    checkStatus(response.data.id);
+    //console.log(response.data);
     /* response.data should be like this
      * { id: '2e706b4a-69d0-400e-8e6b-6c91e1212127',
   status: 'Submitted' }
      */
   })
   .catch(error => {
-    console.log(error);
+    console.log(error.data.message);
   });
 
+const testWorkflowID = "941e4c63-3349-445f-b5d8-9f06f48cf86e";
+/*
+ * We use this function to check the status of a workflow ID
+ */
+const checkStatus = function(workflowID) {
+	axios({
+		  method: 'get',
+		  url: `http://192.168.10.24:8000/api/workflows/v1/${workflowID}/status`
+		})
+		  .then(response => {
+			console.log("=======From check status");
+			console.log( response.data);
+		  })
+		  .catch(error => {
+		    console.log("=======From check status");
+		    console.log("Response status code", error.response.status);
+		    console.log("Error message", error.response.data.message);
+		  });
+};
+
+const getLabel = function(workflowID) {
+	axios({
+		  method: 'get',
+		  url: `http://192.168.10.24:8000/api/workflows/v1/${workflowID}/labels`
+		})
+		  .then(response => {
+			console.log("=======From check labels");
+			console.log( response.data);
+		  })
+		  .catch(error => {
+		    console.log("Response status code", error.response.status);
+		    console.log("Error message", error.response.data.message);
+		  });
+}
+
+getLabel(testWorkflowID);
+checkStatus(testWorkflowID);
 
