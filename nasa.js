@@ -43,6 +43,7 @@ axios({
   });
 
 const testWorkflowID = "941e4c63-3349-445f-b5d8-9f06f48cf86e";
+
 /*
  * We use this function to check the status of a workflow ID
  */
@@ -77,6 +78,37 @@ const getLabel = function(workflowID) {
 		  });
 }
 
+const setLabel = function (workflowID) {
+	axios({
+	  method: 'patch',
+	  url: `http://192.168.10.24:8000/api/workflows/v1/${workflowID}/labels`,
+	  data: "{\"group1\":\"nhung chang trai nhay cam\"}",
+	  headers: {'Content-Type': 'application/json'}
+	})
+	  .then(response => {
+	    console.log("=======From set labels");
+	    console.log(response.data);
+	  })
+	  .catch(error => {
+	    console.log(error);
+	  });
+}
+
+const getOutputs = function(workflowID) {
+	axios({
+		  method: 'get',
+		  url: `http://192.168.10.24:8000/api/workflows/v1/${workflowID}/outputs`
+		})
+		  .then(response => {
+			console.log("=======From get outputs");
+			console.log( response.data);
+		  })
+		  .catch(error => {
+		    console.log("Response status code", error.response.status);
+		    console.log("Error message", error.response.data.message);
+		  });
+}
+setLabel(testWorkflowID);
 getLabel(testWorkflowID);
 checkStatus(testWorkflowID);
-
+getOutputs(testWorkflowID);
